@@ -1,0 +1,151 @@
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Frame chính của Menu
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 400, 0, 500)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -250)
+MainFrame.BackgroundColor3 = Color3.fromRGB(50, 0, 50)
+MainFrame.Parent = ScreenGui
+
+-- Nút Xóa (Góc trên phải)
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseButton.Text = "X"
+CloseButton.Parent = MainFrame
+
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true, function()
+        ScreenGui:Destroy()
+    end)
+end)
+
+-- Vùng chứa các nút Skybox (Cuộn được)
+local ScrollFrame = Instance.new("ScrollingFrame")
+ScrollFrame.Size = UDim2.new(1, -10, 1, -50)
+ScrollFrame.Position = UDim2.new(0, 5, 0, 40)
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 800)
+ScrollFrame.ScrollBarThickness = 5
+ScrollFrame.Parent = MainFrame
+
+-- Hàm đổi Skybox với 6 ID riêng biệt
+local function applySkybox(skyboxData)
+    for _, obj in pairs(game.Lighting:GetChildren()) do
+        if obj:IsA("Sky") then obj:Destroy() end
+    end
+
+    local sky = Instance.new("Sky")
+    sky.SkyboxBk = "rbxthumb://type=Asset&id="..skyboxData.Bk.."&w=420&h=420"
+    sky.SkyboxFt = "rbxthumb://type=Asset&id="..skyboxData.Ft.."&w=420&h=420"
+    sky.SkyboxRt = "rbxthumb://type=Asset&id="..skyboxData.Rt.."&w=420&h=420"
+    sky.SkyboxLf = "rbxthumb://type=Asset&id="..skyboxData.Lf.."&w=420&h=420"
+    sky.SkyboxDn = "rbxthumb://type=Asset&id="..skyboxData.Dn.."&w=420&h=420"
+    sky.SkyboxUp = "rbxthumb://type=Asset&id="..skyboxData.Up.."&w=420&h=420"
+    sky.Parent = game.Lighting
+end
+
+-- Thêm từng nút Skybox
+local function createSkyboxButton(name, previewID, skyboxData, positionIndex)
+    local Button = Instance.new("ImageButton")
+    Button.Size = UDim2.new(1, -10, 0, 80)
+    Button.Position = UDim2.new(0, 5, 0, (positionIndex - 1) * 90)
+    Button.BackgroundTransparency = 1
+    Button.Image = "rbxthumb://type=Asset&id="..previewID.."&w=420&h=420"
+    Button.Parent = ScrollFrame
+
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Size = UDim2.new(1, -10, 0, 20)
+    TextLabel.Position = UDim2.new(0, 5, 1, -25)
+    TextLabel.BackgroundTransparency = 0.5
+    TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    TextLabel.TextColor3 = Color3.new(10, 0, 1)
+    TextLabel.Text = name
+    TextLabel.Parent = Button
+
+    Button.MouseButton1Click:Connect(function()
+        applySkybox(skyboxData)
+    end)
+end
+
+-- Danh sách Skybox
+local skyboxes = {
+    {
+        name = "Sky purple",
+        previewID = "129969883653797",
+        data = {
+            Bk = "129969883653797",
+            Ft = "108101380282845",
+            Rt = "75012662537728",
+            Lf = "137629045445811",
+            Dn = "108658380326960",
+            Up = "106947104504063"
+        }
+    },
+    {
+        name = "Sky chill pink",
+        previewID = "109820516263688",
+        data = {
+            Bk = "85145014734275",
+            Ft = "93060769119066",
+            Rt = "85016324558021",
+            Lf = "109820516263688",
+            Dn = "79534569812811",
+            Up = "120341090307363"
+        }
+    },
+    {
+        name = "Sky Cyan Universe",
+        previewID = "84831457884375",
+        data = {
+            Bk = "84831457884375",
+            Ft = "90342294684060",
+            Rt = "138094425159347",
+            Lf = "111796915886850",
+            Dn = "100999806411205",
+            Up = "92658150243108"
+        }
+    },
+    {
+        name = "Sky Celestial Veil",
+        previewID = "76351826483278",
+        data = {
+            Bk = "128420935675272",
+            Ft = "76351826483278",
+            Rt = "110225564782101",
+            Lf = "121387836893123",
+            Dn = "76165719344415",
+            Up = "82889410751072"
+        }
+    },
+    {
+        name = "Sky orange",
+        previewID = "135402457469361",
+        data = {
+            Bk = "88191526328266",
+            Ft = "78909022394404",
+            Rt = "77865348044679",
+            Lf = "135402457469361",
+            Dn = "74826617274255",
+            Up = "102055434906962"
+        }
+    },
+    {
+        name = "Sky light blue",
+        previewID = "82889140435572",
+        data = {
+            Bk = "134623369780082",
+            Ft = "137329641870411",
+            Rt = "82889140435572",
+            Lf = "105609935522672",
+            Dn = "80361047456730",
+            Up = "100390713086988"
+        }
+    }
+}
+
+-- Tạo nút cho từng Skybox
+for i, skybox in ipairs(skyboxes) do
+    createSkyboxButton(skybox.name, skybox.previewID, skybox.data, i)
+end
